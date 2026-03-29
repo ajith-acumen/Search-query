@@ -11,23 +11,33 @@ const getWords = (query) =>
     normalize(query).split(/\s+/).filter(Boolean);
 
 function fuzzyMatch(a, b) {
+    if (a.length === 0) return b.length === 0 ? 1.0 : 0.0;
+    if (b.length === 0) return a.length === 0 ? 1.0 : 0.0;
+    a = normalize(a);
+    b = normalize(b);
     const matrix = [];
     for (let i = 0; i <= b.length; i++) matrix[i] = [i];
     for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
     for (let i = 1; i <= b.length; i++) {
         for (let j = 1; j <= a.length; j++) {
-            if (b[i - 1] === a[j - 1]) {
-                matrix[i][j] = matrix[i - 1][j - 1];
-            } else {
+            let cost = (b[i - 1] === a[j - 1]) ? 0 : 1;
+            matrix[i][j] = Math.min(
+                matrix[i - 1][j] + 1,
+                matrix[i][j - 1] + 1,
+                matrix[i - 1][j - 1] + cost
+            );
+            if (i > 1 && j > 1 && b[i - 1] === a[j - 2] && b[i - 2] === a[j - 1]) {
                 matrix[i][j] = Math.min(
-                    matrix[i - 1][j - 1] + 1,
-                    matrix[i][j - 1] + 1,
-                    matrix[i - 1][j] + 1
+                    matrix[i][j],
+                    matrix[i - 2][j - 2] + cost
                 );
             }
         }
     }
-    return matrix[b.length][a.length];
+    const distance = matrix[b.length][a.length];
+    const maxLength = Math.max(a.length, b.length);
+    const similarityScore = (maxLength - distance) / maxLength;
+    return similarityScore >= 0.75; // Threshold for fuzzy match
 }
 
 function getTextScore(detail, words) {
@@ -37,11 +47,7 @@ function getTextScore(detail, words) {
         .split(/\s+/);
     words.forEach((queryWord) => {
         for (let textWord of allWords) {
-            if (textWord === queryWord) { //perfect match
-                score += keywordScore;
-                break;
-            }
-            if (fuzzyMatch(queryWord, textWord) <= 1) {// fuzzy match
+            if (fuzzyMatch(queryWord, textWord)) {
                 score += keywordScore;
                 break;
             }

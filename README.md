@@ -1,11 +1,13 @@
 ## Setup Instructions
 
-1. Clone the repository
+1. Install Node.js (v14 or above) from https://nodejs.org (skip if already installed) 
 
-2. Navigate to project folder:
+2. Clone the repository
+
+3. Navigate to project folder:
     cd Search-query
 
-3. Install dependencies:
+4. Install dependencies:
     npm install
 
 ## How to Run the Application
