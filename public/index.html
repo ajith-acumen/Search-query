@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Piaxis Assignment</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        button {
+            background: black;
+            color: white;
+            border: none;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .clear-btn {
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>🔍 Search</h2>
+    <label for="query">Search Query</label>
+    <input id="query" placeholder="Please Enter Query" />
+    <label for="host">Host Element</label>
+    <select id="host">
+        <option value="">Select Host Element</option>
+        <option>Window</option>
+        <option>External Wall</option>
+        <option>Internal Wall</option>
+    </select>
+    <label for="adjacent">Adjacent Element</label>
+    <select id="adjacent">
+        <option value="">Select Adjacent Element</option>
+        <option>External Wall</option>
+        <option>Slab</option>
+        <option>Floor</option>
+    </select>
+    <label for="exposure">Exposure</label>
+    <select id="exposure">
+        <option value="">Select Exposure</option>
+        <option>External</option>
+        <option>Internal</option>
+    </select>
+    <button onclick="search()">Search</button>
+    <button onclick="clearPage()" class="clear-btn">Clear</button>
+    <div id="results"></div>
+    <script>
+        async function search() {
+            const res = await fetch("/search", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    query: document.getElementById("query").value,
+                    host_element: document.getElementById("host").value,
+                    adjacent_element: document.getElementById("adjacent").value,
+                    exposure: document.getElementById("exposure").value
+                })
+            });
+            const data = await res.json();
+            console.log('data is', data)
+            const container = document.getElementById("results");
+            container.innerHTML = "";
+            if(data.results.length){
+             data.results.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "card";
+                div.innerHTML = `Title : ${item.title}<br> Score : ${item.score}<br>Explanation : ${item.explanation}`;
+                container.appendChild(div);
+            });   
+            }else {
+                const div = document.createElement("div");
+                div.className = "card";
+                div.innerHTML = `No Search result found !`;
+                container.appendChild(div);
+            }
+        }
+        function clearPage() {
+            document.getElementById("query").value = "";
+            document.getElementById("host").value = "";
+            document.getElementById("adjacent").value = "";
+            document.getElementById("exposure").value = "";
+            document.getElementById("results").innerHTML = "";
+        }
+    </script>
+</body>
+
+</html>
