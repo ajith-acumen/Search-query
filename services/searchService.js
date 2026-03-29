@@ -41,7 +41,7 @@ function getTextScore(detail, words) {
                 score += keywordScore;
                 break;
             }
-            if (fuzzyMatch(queryWord, textWord) <= 2) {// fuzzy match
+            if (fuzzyMatch(queryWord, textWord) <= 1) {// fuzzy match
                 score += keywordScore;
                 break;
             }
