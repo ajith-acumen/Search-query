@@ -68,7 +68,7 @@ Request Body:
     -> add application-specific field in table(model)for example platform_name.
     -> Implement rate limiting and caching for performance and stability.
 
-## 5. If this system needed to support 100,000+ details, what changes would you make?
+## 5. What would you change if this system needed to support AI-based recommendations in the future?
     -> Introduce an AI layer(middleware) to enhance user queries and inputs before search.
     -> Improve ranking using user interaction data.
     -> Use vector-based search for semantic similarity.
